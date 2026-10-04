@@ -8,7 +8,7 @@
   technical ideas, drawn out
 </p>
 
-`locus` is a small collection of illustrated explanations of how Monarch works.
+`locus` is a small collection of illustrated explanations of how [Monarch](https://meta-pytorch.org/monarch/) works.
 
 Read them at **[shayne-fletcher.github.io/locus](https://shayne-fletcher.github.io/locus/)**: one comic per page, with a permalink for each.
 

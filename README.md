@@ -10,7 +10,9 @@
 
 `locus` is a small collection of illustrated explanations of how Monarch works.
 
-Each comic lives beside the prompt used to make it.
+Read them at **[shayne-fletcher.github.io/locus](https://shayne-fletcher.github.io/locus/)**: one comic per page, with a permalink for each.
+
+Each comic lives beside the prompt used to make it. The site is built by `site/build.py` from `site/comics.json`; to add a comic, add its image and prompt and append an entry there.
 
 ## Figures
 

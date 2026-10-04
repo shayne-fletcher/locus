@@ -25,17 +25,25 @@ class Counter(Actor):
         return self.n
 ```
 
-States $S$, messages $M$, replies $R$:
+`Counter` holds an integer `n`. The endpoint `incr(k)` adds `k` to `n` and replies with the result.
+
+In general, let $S$ be the set of states an actor can be in, $M$ the set of messages it accepts, and $R$ the set of replies it can send. Handling one message is a function, which we call **step**: it takes the current state and a message, and returns the next state and a reply.
 
 $$ \mathsf{step} : S \times M \to S \times R $$
 
 ![The step box.](images/fig-1-1-step.png)
 
-$\mathsf{step}(n, \mathtt{incr}(k)) = (n + k,\ n + k)$. A **Mealy machine**.
+For `Counter`, a state is the integer $n$, a message is $\mathtt{incr}(k)$ for an integer $k$, and a reply is an integer:
+
+$$ \mathsf{step}(n, \mathtt{incr}(k)) = (n + k,\ n + k) $$
+
+A function of this shape, where the next state and the output both depend on the current state and the input, defines a **Mealy machine**: the standard model of a state machine that produces output (Mealy, 1955).
 
 The object lives on its own Python thread; [`PythonActor`](https://github.com/meta-pytorch/monarch/blob/d16adfd48f71dadbdcf2c92c7a3d0054bd323ce2/monarch_hyperactor/src/actor.rs#L1066) holds a handle. The rest is plumbing around `step`, which never changes.
 
 ## A run is a fold
+
+Give `Counter` a second endpoint, which sets `n` back to zero:
 
 ```python
     @endpoint
@@ -44,7 +52,7 @@ The object lives on its own Python thread; [`PythonActor`](https://github.com/me
         return 0
 ```
 
-From $s_0$:
+An actor handles a sequence of messages $m_1, m_2, m_3, \ldots$ one at a time. Write $s_0$ for the state `__init__` leaves. Each step's next state is the following step's current state:
 
 $$
 \begin{aligned}
@@ -56,7 +64,9 @@ $$
 
 ![The fold.](images/fig-2-1-fold.png)
 
-`mapAccumL`. Replies out; state in `self`. [`_dispatch_loop`](https://github.com/meta-pytorch/monarch/blob/d16adfd48f71dadbdcf2c92c7a3d0054bd323ce2/python/monarch/_src/actor/actor_mesh.py#L1398):
+Threading a state through a sequence like this is a **fold**. A fold that also emits an output at each step is known in Haskell as `mapAccumL`: the replies $r_1, r_2, \ldots$ go out, and the state stays inside.
+
+Monarch's [`_dispatch_loop`](https://github.com/meta-pytorch/monarch/blob/d16adfd48f71dadbdcf2c92c7a3d0054bd323ce2/python/monarch/_src/actor/actor_mesh.py#L1398) is this loop, with batching removed. The state is never passed along because it lives in `self`:
 
 ```python
 while True:
@@ -66,9 +76,9 @@ while True:
 
 > State is the fold of the messages handled so far.
 
-**One at a time:** $s_2$ needs $s_1$.
+**One at a time.** $s_2$ can't be computed until $s_1$ exists, so each handler finishes before the next message is taken.
 
-**In order:**
+**In order.** The same two messages, applied in either order to a state of 5:
 
 $$
 \begin{aligned}
@@ -79,7 +89,7 @@ $$
 
 ![Order matters.](images/fig-2-2-order.png)
 
-Delivery must preserve order.
+The final states differ, so delivery must preserve order.
 
 <!-- To come, in order:
 ## Order            two FIFO hops; order-preserving maps compose

@@ -31,7 +31,7 @@ In general, let $S$ be the set of states an actor can be in, $M$ the set of mess
 
 $$ \mathsf{step} : S \times M \to S \times R $$
 
-![The step box.](images/fig-1-1-step.png)
+![$\mathsf{step}$ as a string diagram. Wires are sets, wires side by side form a product, and the box is a function.](images/fig-1-1-step.png)
 
 For `Counter`, a state is the integer $n$, a message is $\mathtt{incr}(k)$ for an integer $k$, and a reply is an integer:
 
@@ -62,7 +62,7 @@ $$
 \end{aligned}
 $$
 
-![The fold.](images/fig-2-1-fold.png)
+![Three steps composed along the state wire, from $s_0$ to $s_3$.](images/fig-2-1-fold.png)
 
 Threading a state through a sequence like this is a **fold**. A fold that also emits an output at each step is known in Haskell as `mapAccumL`: the replies $r_1, r_2, \ldots$ go out, and the state stays inside.
 
@@ -87,7 +87,7 @@ $$
 \end{aligned}
 $$
 
-![Order matters.](images/fig-2-2-order.png)
+![The same two messages in either order, ending in different states.](images/fig-2-2-order.png)
 
 The final states differ, so delivery must preserve order.
 

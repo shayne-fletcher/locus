@@ -49,7 +49,7 @@ def page(*, cfg, title, description, up, body, og_image, og_url):
 {body}
 <footer class="site-footer">
   <a href="{up}">locus</a> · How <a href="https://meta-pytorch.org/monarch/">Monarch</a> works · <a href="{e(cfg["repo_url"])}">source</a><br>
-  Comics © Shane Fletcher, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>
+  Comics © Shane Fletcher, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> · a personal project, not an official Monarch or Meta publication
 </footer>
 </body>
 </html>
@@ -72,10 +72,8 @@ def cover_body(cfg):
   <img class="cover-art" src="{v("images/logo.png")}" alt="locus: {e(cfg["tagline"])}" width="420" height="420">
 </header>
 <section class="intro">
-  <p class="intro-lead">Comics about how <a href="https://meta-pytorch.org/monarch/">Monarch</a> works on the inside: where Rust and Python meet, which thread runs what, and how a result finds its way back.</p>
-  <p>One mechanism per strip, checked against the source. Every strip links to the prompt it was drawn from.</p>
-  <p><a class="start" href="1/">Start with No. 1 →</a></p>
-  <p class="intro-note">A personal project, not an official Monarch or Meta publication.</p>
+  <p>Hi! <strong>locus</strong> is a small collection of comics about how <a href="https://meta-pytorch.org/monarch/">Monarch</a> works: the snakes, cogs and mailboxes behind the API, one idea per strip.</p>
+  <p>Pick any issue, or start at <a href="1/">No. 1</a>.</p>
 </section>
 <main class="issues-wrap">
 <ol class="issues">

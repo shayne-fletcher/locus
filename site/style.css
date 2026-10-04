@@ -43,23 +43,8 @@ a { color: var(--link); }
   box-shadow: 0 6px 0 var(--frame);
   transform: rotate(-1.2deg);
 }
-.intro { max-width: 640px; margin: 0.5rem auto 0; padding: 0 1rem; text-align: center; }
-.intro p { margin: 0.6rem 0; }
-.intro-lead { font-size: 1.2rem; font-weight: 700; line-height: 1.45; }
-.start {
-  display: inline-block;
-  margin-top: 0.3rem;
-  padding: 0.35rem 1rem;
-  border: 2px solid var(--frame);
-  border-radius: 999px;
-  background: var(--badge);
-  color: var(--ink);
-  font-weight: 800;
-  text-decoration: none;
-  box-shadow: 0 3px 0 var(--frame);
-}
-.start:hover { transform: translateY(-1px); box-shadow: 0 4px 0 var(--frame); }
-.intro-note { color: var(--muted); font-size: 0.85rem; }
+.intro { max-width: 620px; margin: 0.6rem auto 0; padding: 0 1rem; text-align: center; font-size: 1.1rem; }
+.intro p { margin: 0.5rem 0; }
 .issues-wrap { max-width: 1120px; margin: 0 auto; padding: 1.5rem 1rem 2rem; }
 .issues {
   list-style: none;

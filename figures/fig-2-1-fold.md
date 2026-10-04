@@ -1,15 +1,28 @@
 # Fig 2.1: the fold
 
-File: `images/fig-2-1-fold.png`. Section: "A run is a fold". The signature picture; it returns in the afterword.
+Seed for `images/fig-2-1-fold.png`, used in the section "A run is a fold". It extends Fig 1.1: the same box, repeated, with the state threaded through. Everything below the line is the prompt; paste it whole.
 
-**Idea:** a run is the step box from Fig 1.1 repeated, with the state threaded through.
+---
 
-**Layout:**
-- Three identical lilac **step** boxes in a row, evenly spaced.
-- One heavy horizontal state wire runs left to right through all three. Label its segments **s₀**, **s₁**, **s₂** and **s₃**, from left to right. Above s₀, a small tag: "after `__init__`".
-- Above each box, an envelope drops in on a thin vertical wire, labelled **m₁**, **m₂** and **m₃**. Above them, a short queue of envelopes fades off to the upper left: messages keep coming.
-- Below each box, an envelope falls out on a thin vertical wire, labelled **r₁**, **r₂** and **r₃**.
-- The right end of the state wire trails off as a dotted line: the run continues.
-- Bottom caption inside the figure: *the state is the fold of the messages so far*
+Draw a formal diagram for a mathematics-flavoured technical article.
 
-**Must be true:** messages enter only from above and replies leave only from below. The state wire never leaves the row.
+**Style.**
+- A clean string diagram, as in category theory texts.
+- Black ink on a warm off-white background. One flat fill colour only: pale lilac inside the boxes.
+- Uniform line weight, except that the state wire is noticeably heavier.
+- No characters, faces, envelopes, icons, shadows or handwriting.
+- All labels are set in a LaTeX-style serif: italic for variables, upright sans-serif for **step**.
+- Canvas 1600 × 600 px, landscape, with generous margins. No title or caption.
+
+**Content.**
+- Three identical rectangles with slightly rounded corners, evenly spaced in a row, each labelled **step**.
+- One heavy horizontal wire runs left to right through all three boxes. Label its four segments, above the wire, *s*₀, *s*₁, *s*₂ and *s*₃. The *s*₀ segment starts at the left margin.
+- Above each box, a thin vertical wire comes down into the box's top edge. Label them *m*₁, *m*₂ and *m*₃ at their upper ends.
+- Below each box, a thin vertical wire leaves the box's bottom edge. Label them *r*₁, *r*₂ and *r*₃ at their lower ends.
+- After the *s*₃ segment, the heavy wire continues as a short dotted line to the right margin.
+- Wires carry small arrowheads: rightward on the state wire, downward on the message and reply wires.
+
+**Must be true.**
+- The state wire is one straight line at a single height, interrupted only by the boxes.
+- Messages enter only through box tops; replies leave only through box bottoms.
+- No other text appears anywhere.

@@ -20,3 +20,7 @@ Each comic lives beside the prompt used to make it. The site is built by `site/b
 - [Who owns the thread?](images/fig-2-who-owns-the-thread.png) — [prompt](figures/fig-2-who-owns-the-thread.md)
 - [How `handle.get()` wakes up](images/fig-3-1-handle-get.png) — [prompt](figures/fig-3-1-handle-get.md)
 - [How `await handle` wakes the asyncio loop](images/fig-3-2-handle-asyncio.png) — [prompt](figures/fig-3-2-handle-asyncio.md)
+
+## License
+
+The comics, their prompts and the logo are © Shane Fletcher, licensed under [Creative Commons Attribution 4.0](LICENSE) (CC BY 4.0): share and adapt them freely, with credit. The site code (`site/` and `.github/`) is under the [BSD 3-Clause License](LICENSE-CODE).

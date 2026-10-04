@@ -48,7 +48,8 @@ def page(*, cfg, title, description, up, body, og_image, og_url):
 <body>
 {body}
 <footer class="site-footer">
-  <a href="{up}">locus</a> · {e(cfg["tagline"])} · <a href="{e(cfg["repo_url"])}">source</a>
+  <a href="{up}">locus</a> · {e(cfg["tagline"])} · <a href="{e(cfg["repo_url"])}">source</a><br>
+  Comics © Shane Fletcher, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>
 </footer>
 </body>
 </html>

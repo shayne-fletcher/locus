@@ -72,7 +72,7 @@ def cover_body(cfg):
   <img class="cover-art" src="{v("images/logo.png")}" alt="locus: {e(cfg["tagline"])}" width="420" height="420">
 </header>
 <section class="intro">
-  <p>hi! <strong>locus</strong> is a small collection of comics about how <a href="https://meta-pytorch.org/monarch/">Monarch</a> works: the snakes, cogs and mailboxes behind the API, one idea per strip.</p>
+  <p>Hi 👋! <strong>locus</strong> is a small collection of comics about how <a href="https://meta-pytorch.org/monarch/">Monarch</a> works: the snakes, cogs and mailboxes behind the API, one idea per strip.</p>
   <p>Start anywhere.</p>
 </section>
 <main class="issues-wrap">

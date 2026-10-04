@@ -1,6 +1,6 @@
 ---
 title: How Monarch's Python actors work
-subtitle: Actor theory for obscure wizardry
+subtitle: The actor model for obscure wizardry
 author: Shane Fletcher
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: How Monarch's Python actors work
-subtitle: The actor model for obscure wizardry
+subtitle: The actor model
 author: Shane Fletcher
 ---
 

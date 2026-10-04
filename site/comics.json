@@ -8,25 +8,25 @@
       "title": "Rust owns the mailbox, Python owns the loop",
       "image": "images/fig-1-python-actors.png",
       "prompt": "figures/fig-1-python-actors.md",
-      "hover": "A queue plus a pipe byte joins them. The byte is only a hint; the queue is the truth."
+      "caption": "A queue plus a pipe byte joins them. The byte is only a hint; the queue is the truth."
     },
     {
       "title": "Who owns the thread?",
       "image": "images/fig-2-who-owns-the-thread.png",
       "prompt": "figures/fig-2-who-owns-the-thread.md",
-      "hover": "Async: the thread lives inside the loop. Sync: the loop lives inside the thread, and only wakes up when called."
+      "caption": "Async: the thread lives inside the loop. Sync: the loop lives inside the thread, and only wakes up when called."
     },
     {
       "title": "How handle.get() wakes up",
       "image": "images/fig-3-1-handle-get.png",
       "prompt": "figures/fig-3-1-handle-get.md",
-      "hover": "No asyncio loop, no pipe, no busy polling: a watch channel, a waker, and a blocked thread with the GIL released."
+      "caption": "No asyncio loop, no pipe, no busy polling: a watch channel, a waker, and a blocked thread with the GIL released."
     },
     {
       "title": "How await handle wakes the asyncio loop",
       "image": "images/fig-3-2-handle-asyncio.png",
       "prompt": "figures/fig-3-2-handle-asyncio.md",
-      "hover": "The byte wakes the loop; the token says which await completed. The Tokio observer never runs the Python coroutine."
+      "caption": "The byte wakes the loop; the token says which await completed. The Tokio observer never runs the Python coroutine."
     }
   ]
 }

@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Build the locus comics site into _site/.
 
-One page per comic at /<n>/ (a permalink that never changes), the latest comic
-at /, and an archive at /archive/. Standard library only.
+The front page is a cover: the logo and every comic as a numbered issue. Each
+comic has a page at /<n>/, a permalink that never changes. Standard library
+only.
 """
 
 import html
@@ -14,134 +15,108 @@ ROOT = Path(__file__).resolve().parent.parent
 SITE = Path(__file__).resolve().parent
 OUT = ROOT / "_site"
 
+e = html.escape
 
-def page(*, title, description, depth, body, og_image=None, og_url=None):
-    """Wrap a page body. `depth` is how many directories below the site root
-    the page lives, so relative links work under any base path."""
-    up = "../" * depth
-    meta = [
-        f'<meta property="og:title" content="{html.escape(title)}">',
-        f'<meta property="og:description" content="{html.escape(description)}">',
-    ]
-    if og_image:
-        meta.append(f'<meta property="og:image" content="{html.escape(og_image)}">')
-        meta.append('<meta name="twitter:card" content="summary_large_image">')
-    if og_url:
-        meta.append(f'<meta property="og:url" content="{html.escape(og_url)}">')
+
+def page(*, cfg, title, description, up, body, og_image, og_url):
+    """Wrap a page body. `up` is the relative path back to the site root, so
+    links work under any base path."""
     return f"""<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{html.escape(title)}</title>
-<meta name="description" content="{html.escape(description)}">
-{chr(10).join(meta)}
+<title>{e(title)}</title>
+<meta name="description" content="{e(description)}">
+<meta property="og:title" content="{e(title)}">
+<meta property="og:description" content="{e(description)}">
+<meta property="og:image" content="{e(og_image)}">
+<meta property="og:url" content="{e(og_url)}">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="{up}images/logo.png">
 <link rel="stylesheet" href="{up}style.css">
 </head>
 <body>
-<header class="masthead">
-  <a class="brand" href="{up}">
-    <img src="{up}images/logo.png" alt="" width="56" height="56">
-    <span class="name">locus</span>
-  </a>
-  <span class="tagline">How Monarch works</span>
-  <nav class="site-nav"><a href="{up}archive/">Archive</a></nav>
-</header>
-<main>
 {body}
-</main>
+<footer class="site-footer">
+  <a href="{up}">locus</a> · {e(cfg["tagline"])} · <a href="{e(cfg["repo_url"])}">source</a>
+</footer>
 </body>
 </html>
 """
 
 
-def nav(n, count, up):
-    """First / prev / random / next / last. Ends are rendered disabled."""
-
-    def link(label, target, cls):
-        if target is None:
-            return f'<span class="nav-button {cls} disabled" aria-disabled="true">{label}</span>'
-        return f'<a class="nav-button {cls}" href="{up}{target}/">{label}</a>'
-
-    first = None if n == 1 else 1
-    prev = None if n == 1 else n - 1
-    nxt = None if n == count else n + 1
-    last = None if n == count else count
-    return (
-        '<nav class="comic-nav">'
-        + link("|&lt;", first, "first")
-        + link("&lt; Prev", prev, "prev")
-        + f'<a class="nav-button random" href="#" data-random data-count="{count}" data-current="{n}" data-up="{up}">Random</a>'
-        + link("Next &gt;", nxt, "next")
-        + link("&gt;|", last, "last")
-        + "</nav>"
+def cover_body(cfg):
+    issues = "\n".join(
+        f"""<li class="issue">
+  <a href="{n}/">
+    <img src="{e(c["image"])}" alt="" loading="lazy">
+    <span class="issue-number">No. {n}</span>
+    <span class="issue-title">{e(c["title"])}</span>
+    <span class="issue-caption">{e(c.get("caption", ""))}</span>
+  </a>
+</li>"""
+        for n, c in enumerate(cfg["comics"], start=1)
     )
-
-
-SCRIPT = """<script>
-(() => {
-  const r = document.querySelector('[data-random]');
-  if (r) r.addEventListener('click', (e) => {
-    e.preventDefault();
-    const count = +r.dataset.count, current = +r.dataset.current;
-    if (count < 2) return;
-    let n = current;
-    while (n === current) n = 1 + Math.floor(Math.random() * count);
-    location.href = r.dataset.up + n + '/';
-  });
-  document.addEventListener('keydown', (e) => {
-    if (e.metaKey || e.ctrlKey || e.altKey) return;
-    const pick = { ArrowLeft: '.comic-nav .prev', ArrowRight: '.comic-nav .next' }[e.key];
-    const a = pick && document.querySelector(pick + ':not(.disabled)');
-    if (a) location.href = a.href;
-  });
-  const copy = document.querySelector('[data-copy]');
-  if (copy && navigator.clipboard) copy.addEventListener('click', () => {
-    navigator.clipboard.writeText(copy.dataset.copy).then(() => {
-      copy.textContent = 'Copied';
-      setTimeout(() => (copy.textContent = 'Copy'), 1500);
-    });
-  });
-})();
-</script>"""
-
-
-def comic_body(cfg, n, comic, up):
-    count = len(cfg["comics"])
-    permalink = f'{cfg["base_url"]}{n}/'
-    image = f'{up}{comic["image"]}'
-    prompt = f'{cfg["repo_url"]}/blob/main/{comic["prompt"]}'
-    title = html.escape(comic["title"])
-    hover = html.escape(comic.get("hover", ""))
-    return f"""<article class="comic">
-<h1 class="comic-title"><span class="number">#{n}</span> {title}</h1>
-{nav(n, count, up)}
-<figure>
-  <a href="{image}" title="Open full size"><img src="{image}" alt="{title}" title="{hover}"></a>
-</figure>
-{nav(n, count, up)}
-<dl class="links">
-  <dt>Permalink</dt>
-  <dd><a href="{permalink}">{permalink}</a> <button type="button" class="copy" data-copy="{permalink}">Copy</button></dd>
-  <dt>Prompt</dt>
-  <dd><a href="{prompt}">{html.escape(comic["prompt"])}</a></dd>
-</dl>
-</article>
-{SCRIPT}"""
-
-
-def archive_body(cfg):
-    items = "\n".join(
-        f'<li><span class="number">#{n}</span> <a href="../{n}/">{html.escape(c["title"])}</a></li>'
-        for n, c in reversed(list(enumerate(cfg["comics"], start=1)))
-    )
-    return f"""<article class="archive">
-<h1>Archive</h1>
-<ol class="archive-list" reversed>
-{items}
+    return f"""<header class="cover">
+  <img class="cover-art" src="images/logo.png" alt="locus: {e(cfg["tagline"])}" width="420" height="420">
+</header>
+<main class="issues-wrap">
+<ol class="issues">
+{issues}
 </ol>
-</article>"""
+</main>"""
+
+
+def comic_body(cfg, n, comic):
+    comics = cfg["comics"]
+    permalink = f'{cfg["base_url"]}{n}/'
+    image = f'../{comic["image"]}'
+    prompt = f'{cfg["repo_url"]}/blob/main/{comic["prompt"]}'
+    title = e(comic["title"])
+
+    def neighbour(m, rel, arrow_first):
+        if m < 1 or m > len(comics):
+            return f'<span class="pager-{rel} empty"></span>'
+        label = f'No. {m} · {e(comics[m - 1]["title"])}'
+        text = f"← {label}" if arrow_first else f"{label} →"
+        return f'<a class="pager-{rel}" rel="{rel}" href="../{m}/">{text}</a>'
+
+    return f"""<header class="bar">
+  <a class="brand" href="../"><img src="../images/logo.png" alt="" width="40" height="40"><span>locus</span></a>
+</header>
+<main class="comic">
+  <p class="eyebrow">No. {n}
+    <button type="button" class="copy" data-copy="{e(permalink)}" title="Copy this comic's permanent link">Copy link</button>
+  </p>
+  <h1>{title}</h1>
+  <figure>
+    <a href="{image}" title="Open full size"><img src="{image}" alt="{title}"></a>
+    <figcaption>{e(comic.get("caption", ""))}</figcaption>
+  </figure>
+  <p class="prompt">Drawn from <a href="{e(prompt)}">{e(comic["prompt"])}</a></p>
+  <nav class="pager">
+    {neighbour(n - 1, "prev", True)}
+    <a class="pager-home" href="../">All comics</a>
+    {neighbour(n + 1, "next", False)}
+  </nav>
+</main>
+<script>
+(() => {{
+  document.addEventListener('keydown', (ev) => {{
+    if (ev.metaKey || ev.ctrlKey || ev.altKey) return;
+    const a = document.querySelector({{ArrowLeft: 'a[rel=prev]', ArrowRight: 'a[rel=next]'}}[ev.key]);
+    if (a) location.href = a.href;
+  }});
+  const copy = document.querySelector('[data-copy]');
+  if (copy && navigator.clipboard) copy.addEventListener('click', () => {{
+    navigator.clipboard.writeText(copy.dataset.copy).then(() => {{
+      copy.textContent = 'Copied';
+      setTimeout(() => (copy.textContent = 'Copy link'), 1500);
+    }});
+  }});
+}})();
+</script>"""
 
 
 def build():
@@ -154,46 +129,48 @@ def build():
     shutil.copy(SITE / "style.css", OUT / "style.css")
     (OUT / ".nojekyll").write_text("")
 
-    for n, comic in enumerate(comics, start=1):
-        if not (ROOT / comic["image"]).exists():
-            raise SystemExit(f"missing image for #{n}: {comic['image']}")
-        if not (ROOT / comic["prompt"]).exists():
-            raise SystemExit(f"missing prompt for #{n}: {comic['prompt']}")
-        common = dict(
-            title=f'{comic["title"]} · locus',
-            description=comic.get("hover") or cfg["tagline"],
-            og_image=cfg["base_url"] + comic["image"],
-            og_url=f'{cfg["base_url"]}{n}/',
+    (OUT / "index.html").write_text(
+        page(
+            cfg=cfg,
+            title=f'locus · {cfg["tagline"]}',
+            description=cfg["tagline"],
+            up="",
+            body=cover_body(cfg),
+            og_image=cfg["base_url"] + "images/logo.png",
+            og_url=cfg["base_url"],
         )
+    )
+
+    for n, comic in enumerate(comics, start=1):
+        for key in ("image", "prompt"):
+            if not (ROOT / comic[key]).exists():
+                raise SystemExit(f"No. {n}: missing {key} {comic[key]}")
         (OUT / str(n)).mkdir()
         (OUT / str(n) / "index.html").write_text(
-            page(depth=1, body=comic_body(cfg, n, comic, "../"), **common)
-        )
-        if n == len(comics):
-            # The front page is the latest comic; its permalink is still /<n>/.
-            (OUT / "index.html").write_text(
-                page(depth=0, body=comic_body(cfg, n, comic, ""), **common)
+            page(
+                cfg=cfg,
+                title=f'No. {n}: {comic["title"]} · locus',
+                description=comic.get("caption") or cfg["tagline"],
+                up="../",
+                body=comic_body(cfg, n, comic),
+                og_image=cfg["base_url"] + comic["image"],
+                og_url=f'{cfg["base_url"]}{n}/',
             )
+        )
 
-    (OUT / "archive").mkdir()
-    (OUT / "archive" / "index.html").write_text(
+    (OUT / "404.html").write_text(
         page(
-            title="Archive · locus",
+            cfg=cfg,
+            title="Not found · locus",
             description=cfg["tagline"],
-            depth=1,
-            body=archive_body(cfg),
+            up=cfg["base_url"],
+            body='<main class="comic"><h1>No comic here</h1><p><a href="'
+            + e(cfg["base_url"])
+            + '">Back to the cover</a></p></main>',
             og_image=cfg["base_url"] + "images/logo.png",
-            og_url=cfg["base_url"] + "archive/",
+            og_url=cfg["base_url"],
         )
     )
-
-    not_found = page(
-        title="Not found · locus",
-        description=cfg["tagline"],
-        depth=0,
-        body='<article class="archive"><h1>No comic here</h1><p><a href="/locus/">Back to the latest comic</a></p></article>',
-    )
-    (OUT / "404.html").write_text(not_found)
     print(f"built {len(comics)} comics into {OUT.relative_to(ROOT)}/")
 
 

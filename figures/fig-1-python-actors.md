@@ -1,10 +1,10 @@
-# Strip 1: Rust owns the mailbox, Python owns the loop
+# Fig 1: Rust owns the mailbox, Python owns the loop
 
-Seed for `images/strip-1-python-actors.png`, which opens the article. Everything below the line is the prompt; paste it whole. Panel content is maintained alongside the Monarch checkout's `strips/` and copied here.
+Seed for `images/fig-1-python-actors.png`. Everything below the line is the prompt; paste it whole. Panel content is maintained alongside the Monarch checkout's `strips/` and copied here.
 
 ---
 
-Draw a comic strip for a technical article.
+Draw a standalone comic explainer.
 
 **Style.**
 - A hand-drawn comic explainer on warm off-white paper.
@@ -12,10 +12,12 @@ Draw a comic strip for a technical article.
 - Thick, dark-ink rounded outlines; soft pastel fills (blue, lilac, mint, peach, rose, butter yellow); a gentle drop shadow on boxes.
 - Lettering is hand-drawn and highly legible. Code identifiers are set in monospace and spelled exactly as given.
 - **Recurring characters:**
-  - **Rust:** a smiling orange cog with eyes.
+  - **Rust-side `PythonActor`:** a smiling orange cog with eyes, always contained inside or directly attached to a box labelled `PythonActor (Rust)`. It is the Rust actor, not an OS thread.
   - **Python:** a friendly blue-and-yellow snake. When the panel says it's asleep, it sleeps with "z z z".
-  - **Your actor:** a small lilac blob with a smiley face and crossed arms.
-- **Recurring props:** the mpsc queue as a short stack of orange boxes; the self-pipe as a blue tube with a "0x01" byte; messages as envelopes.
+  - **Your Actor object:** a small lilac blob with a smiley face and crossed arms, always explicitly labelled `your Actor object`. It is Python state, not an OS thread.
+- **Threads are not characters.** Draw an OS thread only as a labelled lane, boundary, or rectangular container. Never use the orange cog, Python snake, or lilac blob to represent a thread.
+- **`_Actor` is not a character.** Draw Monarch's Python wrapper as a blue rounded box labelled `Py handle to _Actor (Python)`.
+- **Recurring props:** the mpsc queue as a short stack of orange boxes; the self-pipe as a blue tube with a marker labelled **1 byte**; messages as envelopes.
 - Canvas 1536 × 1024 px, landscape.
 - Render each panel's title and text faithfully. Lines in *italics* are panel footnotes, set in a tinted box at the bottom of the panel. Draw the ASCII sketches as diagrams; don't copy them as text.
 
@@ -31,8 +33,12 @@ Rust  PythonActor ──holds──▶ Py handle to _Actor ──wraps──▶ 
 ```
 `PythonActor` (`monarch_hyperactor/src/actor.rs`) is an ordinary hyperactor actor whose handlers live in Python.
 
+Visual requirements: place the orange cog inside or beside the box `PythonActor (Rust)`. Draw the blue `_Actor` wrapper box separately. Draw the lilac blob inside or beside the box `your Actor object (Python state; endpoints)`. Do not draw or imply an OS thread in this panel.
+
 **Panel 2: spawn**
 Rust unpickles `_Actor` (Monarch's wrapper, not your class) and constructs it. It creates a new asyncio event loop on a daemon thread, `monarch-actor-event-loop`, and starts `_dispatch_loop(actor, receiver, instance)` on it. Your class arrives as the first message, `__init__`: `_Actor.handle` constructs your Actor on that thread. It never leaves; messages never carry it.
+
+Visual requirements: show `monarch-actor-event-loop` as a clearly labelled thread lane or rectangular boundary, never as a character. First show Rust constructing the `_Actor` wrapper. Then show a distinct `__init__` message entering the thread lane, where `_Actor.handle` constructs the lilac `your Actor object`. Keep those two construction events visibly separate.
 
 **Panel 3: two loops per Python actor**
 ```
@@ -49,6 +55,7 @@ Both are first-in, first-out, so per-actor order holds end to end. All the Pytho
 **Panel 5: the wake-up**
 The Python thread is asleep in the selector (kqueue/epoll), GIL released. The pipe becomes readable, the loop runs its reader callback (`os.read` one byte, `event.set()`), and `Receiver.recv()` resumes.
 *The byte is only a hint; the queue is the truth.*
+The byte's value carries no meaning. Label it only **1 byte**; never present it as a code, hexadecimal value or ID.
 
 **Panel 6: the conversion (Rust code, on Python's thread)**
 `recv` calls `try_recv`. It's declared in Python but implemented in Rust (`pympsc.rs`), and runs on this thread holding its GIL. It pops the box and calls `PendingMessage::into_queued`, producing a `QueuedMessage` (`PyContext`, method, bytes, refs, port).

@@ -1,21 +1,21 @@
-# Strip 2: who owns the thread?
+# Fig 2: who owns the thread?
 
-Seed for `images/strip-2-who-owns-the-thread.png`, which opens the section "Two drivers". Everything below the line is the prompt; paste it whole. Panel content is maintained alongside the Monarch checkout's `strips/` and copied here.
+Seed for `images/fig-2-who-owns-the-thread.png`. Everything below the line is the prompt; paste it whole. Panel content is maintained alongside the Monarch checkout's `strips/` and copied here.
 
 ---
 
-Draw a comic strip for a technical article.
+Draw a standalone comic explainer.
 
 **Style.**
 - A hand-drawn comic explainer on warm off-white paper.
 - The page is a 4 × 2 grid of numbered panels under a title banner, with a one-liner box at the bottom or in the last panel.
 - Thick, dark-ink rounded outlines; soft pastel fills (blue, lilac, mint, peach, rose, butter yellow); a gentle drop shadow on boxes.
 - Lettering is hand-drawn and highly legible. Code identifiers are set in monospace and spelled exactly as given.
-- **Recurring characters:**
-  - **Rust:** a smiling orange cog with eyes.
-  - **Python:** a friendly blue-and-yellow snake. When the panel says it's asleep, it sleeps with "z z z".
-  - **Your actor:** a small lilac blob with a smiley face and crossed arms.
-- **Recurring props:** the mpsc queue as a short stack of orange boxes; the self-pipe as a blue tube with a "0x01" byte; messages as envelopes.
+- **Recurring props:** the mpsc queue as a short stack of orange boxes; the self-pipe as a blue tube with a marker labelled **1 byte**; messages as envelopes. The byte's value carries no meaning: never present it as a code, hexadecimal value or ID.
+- **Python-thread character:** a friendly blue-and-yellow snake may personify the Python actor thread, but it must always wear or sit beside an explicit `OS thread` label. Use the same character on both async and sync sides.
+- **Rust/Tokio character:** a smiling orange cog may appear only where Rust or Tokio actively wakes, converts, waits, or schedules work. It never represents a Python thread or event loop.
+- **Actor state:** a small lilac blob may appear only beside effects on the actor's state and must be labelled `actor state`. It never represents a thread or loop.
+- **Visual grammar:** an event loop is always a distinct rounded box or loop-shaped track explicitly labelled `asyncio loop` or `private loop`. Characters may sit inside, beside, or interact with the diagram, but never replace its labels.
 - Canvas 1536 × 1024 px, landscape.
 - Render each panel's title and text faithfully. Lines in *italics* are panel footnotes, set in a tinted box at the bottom of the panel. Draw the ASCII sketches as diagrams; don't copy them as text.
 
@@ -33,14 +33,16 @@ thread ──calls──▶ run_forever      thread ──owns──▶ private 
 ```
 Left: the thread gives itself to the loop. Right: the thread keeps control and keeps a loop in its pocket.
 
+Visual requirements: use two matching blue-and-yellow snake characters, each explicitly tagged `OS thread`. On the async side, place the thread snake inside a clearly separate `asyncio loop` / `run_forever` track: the thread gives itself to the loop and the call never returns. On the sync side, place the thread snake beside its own clearly labelled `while-loop`, carrying or holding a separate small `private loop (idle)` box like a satchel. The character is the thread; the labelled box is the loop. Do not include an orange Rust cog or purple actor blob in Panel 1.
+
 **Panel 2: waiting**
-- **Async:** asleep in the selector, GIL released; `add_reader` is watching the pipe.
+- **Async:** asleep in the selector, GIL released; `add_reader` is watching the pipe. If the wake marker is shown, label it **1 byte**, never with a byte value.
 - **Sync:** asleep in `recv_blocking()`, GIL released; it waits on the queue itself.
 
 *No pipe on the right: there's no running loop to wake.*
 
 **Panel 3: a message arrives**
-- **Async:** pipe byte → selector wakes → reader callback sets the event → `_dispatch_loop` resumes.
+- **Async:** **1 byte** down the pipe → selector wakes → reader callback sets the event → `_dispatch_loop` resumes.
 - **Sync:** `recv_blocking` returns, and the thread's own loop just continues.
 
 **Panel 4: the conversion**
@@ -60,7 +62,7 @@ Left: the thread gives itself to the loop. Right: the thread keeps control and k
 ASYNC                              SYNC
 await handle                       handle.get()
   Tokio wakes the loop               parks in Tokio, GIL released
-  with a pipe byte (no GIL)
+  with a 1-byte pipe wake (no GIL)
 await returns_future body          body.get()
   runs as a task on this loop        runs on this thread's private loop:
                                      run_until_complete, then returns
@@ -70,6 +72,8 @@ await returns_future body          body.get()
 **Panel 7: other work** (supervise, cleanup, spawned tasks)
 - **Async:** Rust schedules it onto the loop; it interleaves with the current endpoint at its `await`s. `@concurrent_endpoint` bodies run as tasks too, and the loop yields every 64 messages so they get a turn.
 - **Sync:** it arrives on the same queue and runs in order, between endpoints. No concurrent endpoints: one endpoint at a time, always.
+
+Visual requirements: on the async side, show one current endpoint only; supervision and spawned tasks get turns at that endpoint's await points. Never show endpoint A and endpoint B interleaving. Show cleanup as normally occurring at stop, not mid-stream. On the sync side, show ordered queue processing and no overlap.
 
 **Panel 8: done, go again**
 Both reply through `response_port`. Then async goes back to `try_recv`; sync goes back to `recv_blocking`.

@@ -66,7 +66,7 @@ $$
 
 ![Three steps composed along the state wire, from $s_0$ to $s_3$.](images/fig-2-1-fold.png)
 
-Threading a state through a sequence like this is a **fold**. A fold that also emits an output at each step is known in Haskell as `mapAccumL`: the replies $r_1, r_2, \ldots$ go out, and the state stays inside.
+Threading a state through a sequence like this is a **fold**. The replies $r_1, r_2, \ldots$ go out; the state stays inside.
 
 Monarch's [`_dispatch_loop`](https://github.com/meta-pytorch/monarch/blob/d16adfd48f71dadbdcf2c92c7a3d0054bd323ce2/python/monarch/_src/actor/actor_mesh.py#L1398) is this loop, with batching removed. The state is never passed along because it lives in `self`:
 

@@ -41,7 +41,7 @@ A function of this shape, where the next state and the output both depend on the
 
 Here a reply is what the endpoint returns, which Monarch sends back on the message's response port. In general an endpoint can send any number of messages to any ports (`explicit_response_port=True` hands it the response port to use itself), so the output of a step is a set of sends; `return x` is the case of exactly one. This is the **actor model** ([Hewitt, 1973](#ref-hewitt); [Agha, 1986](#ref-agha)): on each message, an actor sends messages, creates actors, and becomes its next state.
 
-Monarch constructs your `Counter` instance once, on a Python thread dedicated to that actor, and it stays there; Rust's [`PythonActor`](https://github.com/meta-pytorch/monarch/blob/d16adfd48f71dadbdcf2c92c7a3d0054bd323ce2/monarch_hyperactor/src/actor.rs#L1066) holds a handle to it. The rest is plumbing around `step`, which never changes.
+Each actor gets [its own Python thread](https://github.com/meta-pytorch/monarch/blob/d16adfd48f71dadbdcf2c92c7a3d0054bd323ce2/monarch_hyperactor/src/actor.rs#L1729). Your `Counter` instance is [constructed there](https://github.com/meta-pytorch/monarch/blob/d16adfd48f71dadbdcf2c92c7a3d0054bd323ce2/python/monarch/_src/actor/actor_mesh.py#L1534), as the handling of the actor's first message, `__init__`, and never leaves. Rust's [`PythonActor`](https://github.com/meta-pytorch/monarch/blob/d16adfd48f71dadbdcf2c92c7a3d0054bd323ce2/monarch_hyperactor/src/actor.rs#L1066) holds a handle to the `_Actor` wrapper around it. The rest is plumbing around `step`, which never changes.
 
 ## A run is a fold
 

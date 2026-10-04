@@ -37,11 +37,11 @@ For `Counter`, a state is the integer $n$, a message is $\mathtt{incr}(k)$ for a
 
 $$ \mathsf{step}(n, \mathtt{incr}(k)) = (n + k,\ n + k) $$
 
-A function of this shape, where the next state and the output both depend on the current state and the input, defines a **Mealy machine**: the standard model of a state machine that produces output (Mealy, 1955).
+A function of this shape, where the next state and the output both depend on the current state and the input, defines a **Mealy machine**: the standard model of a state machine that produces output ([Mealy, 1955](#ref-mealy)).
 
-Here a reply is what the endpoint returns, which Monarch sends back on the message's response port. In general an endpoint can send any number of messages to any ports (`explicit_response_port=True` hands it the response port to use itself), so the output of a step is a set of sends; `return x` is the case of exactly one. This is the **actor model** (Hewitt, 1973; Agha, 1986): on each message, an actor sends messages, creates actors, and becomes its next state.
+Here a reply is what the endpoint returns, which Monarch sends back on the message's response port. In general an endpoint can send any number of messages to any ports (`explicit_response_port=True` hands it the response port to use itself), so the output of a step is a set of sends; `return x` is the case of exactly one. This is the **actor model** ([Hewitt, 1973](#ref-hewitt); [Agha, 1986](#ref-agha)): on each message, an actor sends messages, creates actors, and becomes its next state.
 
-The object lives on its own Python thread; [`PythonActor`](https://github.com/meta-pytorch/monarch/blob/d16adfd48f71dadbdcf2c92c7a3d0054bd323ce2/monarch_hyperactor/src/actor.rs#L1066) holds a handle. The rest is plumbing around `step`, which never changes.
+Monarch constructs your `Counter` instance once, on a Python thread dedicated to that actor, and it stays there; Rust's [`PythonActor`](https://github.com/meta-pytorch/monarch/blob/d16adfd48f71dadbdcf2c92c7a3d0054bd323ce2/monarch_hyperactor/src/actor.rs#L1066) holds a handle to it. The rest is plumbing around `step`, which never changes.
 
 ## A run is a fold
 
@@ -95,9 +95,9 @@ The final states differ, so delivery must preserve order.
 
 ## References
 
-- G. Agha. *Actors: A Model of Concurrent Computation in Distributed Systems.* MIT Press, 1986.
-- C. Hewitt, P. Bishop and R. Steiger. A universal modular ACTOR formalism for artificial intelligence. *IJCAI*, 1973.
-- G. H. Mealy. A method for synthesizing sequential circuits. *Bell System Technical Journal* 34(5), 1955.
+- []{#ref-agha}G. Agha. [*Actors: A Model of Concurrent Computation in Distributed Systems*](https://doi.org/10.7551/mitpress/1086.001.0001). MIT Press, 1986.
+- []{#ref-hewitt}C. Hewitt, P. Bishop and R. Steiger. [A universal modular ACTOR formalism for artificial intelligence](https://www.ijcai.org/Proceedings/73/Papers/027B.pdf). *IJCAI*, 1973.
+- []{#ref-mealy}G. H. Mealy. [A method for synthesizing sequential circuits](https://doi.org/10.1002/j.1538-7305.1955.tb03788.x). *Bell System Technical Journal* 34(5), 1955.
 
 <!-- To come, in order:
 ## Order            two FIFO hops; order-preserving maps compose

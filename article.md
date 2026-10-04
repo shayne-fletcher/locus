@@ -1,6 +1,6 @@
 ---
-title: Who owns the thread?
-subtitle: How Monarch's Python actors work, in pictures and a little mathematics
+title: How Monarch's Python actors work
+subtitle: In pictures and a little mathematics
 author: Shane Fletcher
 ---
 

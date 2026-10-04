@@ -32,7 +32,7 @@ Rust  PythonActor ──holds──▶ Py handle to _Actor ──wraps──▶ 
 `PythonActor` (`monarch_hyperactor/src/actor.rs`) is an ordinary hyperactor actor whose handlers live in Python.
 
 **Panel 2: spawn**
-Rust unpickles your class and constructs it. It creates a new asyncio event loop on a daemon thread, `monarch-actor-event-loop`, and starts `_dispatch_loop(actor, receiver, instance)` on it. The Python object is handed over once, here. Messages never carry it.
+Rust unpickles `_Actor` (Monarch's wrapper, not your class) and constructs it. It creates a new asyncio event loop on a daemon thread, `monarch-actor-event-loop`, and starts `_dispatch_loop(actor, receiver, instance)` on it. Your class arrives as the first message, `__init__`: `_Actor.handle` constructs your Actor on that thread. It never leaves; messages never carry it.
 
 **Panel 3: two loops per Python actor**
 ```

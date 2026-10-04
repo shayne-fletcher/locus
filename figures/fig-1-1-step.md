@@ -4,30 +4,26 @@ Seed for `images/fig-1-1-step.png`, used in the section "An actor is a step". Ev
 
 ---
 
-Draw a figure for a technical article.
+Draw a formal diagram for a mathematics-flavoured technical article.
 
 **Style.**
-- A hand-drawn comic explainer on warm off-white paper.
-- Thick, dark-ink rounded outlines and soft pastel fills: lilac, butter yellow.
-- Boxes have a gentle drop shadow.
-- Lettering is hand-drawn and highly legible.
-- Math is set in a clean serif italic, like LaTeX.
-- Canvas 1600 × 700 px, landscape, with generous margins. No title.
-- Use only the text listed below.
+- A clean string diagram, as in category theory texts.
+- Black ink on a warm off-white background. One flat fill colour only: pale lilac inside the box.
+- Uniform line weight, except that the state wire is noticeably heavier.
+- No characters, faces, envelopes, icons, shadows or handwriting.
+- All labels are set in a LaTeX-style serif: italic for variables, upright sans-serif for **step**.
+- Canvas 1600 × 600 px, landscape, with generous margins. No title or caption.
 
-**Idea.** A whole actor is a single box with two inputs and two outputs.
-
-**Layout.**
-- **Centre:** one large rounded box, lilac, labelled **step**. A small lilac blob character peeks over its top edge, with a smiley face and crossed arms.
-- **Left side, two arrows entering the box:**
-  - upper: a heavy wire labelled ***s***, with the small note "state";
-  - lower: a thin wire carrying a small yellow envelope, labelled ***m***, with the note "message".
-- **Right side, two arrows leaving the box:**
-  - upper: a heavy wire labelled ***s′***, with the note "state";
-  - lower: a thin wire carrying a small yellow envelope, labelled ***r***, with the note "reply".
-- **Beneath the box, centred:** the formula *step : S × M → S × R*
+**Content.**
+- **Centre:** one rectangle with slightly rounded corners, labelled **step**.
+- **Left edge, two input wires:**
+  - upper: a heavy wire labelled *S*;
+  - lower: a thin wire labelled *M*.
+- **Right edge, two output wires:**
+  - upper: a heavy wire labelled *S*;
+  - lower: a thin wire labelled *R*.
+- Wires carry small arrowheads pointing left to right. Each label sits just above its wire, near the outer end.
 
 **Must be true.**
-- The state wire enters and leaves at the same height, as one heavy line interrupted by the box.
-- The message and reply wires are visibly thinner than the state wire.
-- Lowercase *s, m, r* label the wires; uppercase *S, M, R* appear only in the formula.
+- The heavy *S* wire enters and leaves at the same height: one line interrupted by the box.
+- No other text appears anywhere: not the formula, and no words such as "state" or "message".

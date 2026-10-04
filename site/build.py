@@ -73,7 +73,7 @@ def cover_body(cfg):
 </header>
 <section class="intro">
   <p>Hi! <strong>locus</strong> is a small collection of comics about how <a href="https://meta-pytorch.org/monarch/">Monarch</a> works: the snakes, cogs and mailboxes behind the API, one idea per strip.</p>
-  <p>Pick any issue, or start at <a href="1/">No. 1</a>.</p>
+  <p>Start anywhere.</p>
 </section>
 <main class="issues-wrap">
 <ol class="issues">

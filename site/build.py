@@ -6,6 +6,7 @@ comic has a page at /<n>/, a permalink that never changes. Standard library
 only.
 """
 
+import hashlib
 import html
 import json
 import shutil
@@ -16,6 +17,14 @@ SITE = Path(__file__).resolve().parent
 OUT = ROOT / "_site"
 
 e = html.escape
+
+
+def v(path):
+    """`path` with a content hash appended, so a changed file gets a new URL
+    and browsers never pair new HTML with a stale cached copy."""
+    source = SITE / path if path == "style.css" else ROOT / path
+    digest = hashlib.sha256(source.read_bytes()).hexdigest()[:10]
+    return f"{path}?v={digest}"
 
 
 def page(*, cfg, title, description, up, body, og_image, og_url):
@@ -33,8 +42,8 @@ def page(*, cfg, title, description, up, body, og_image, og_url):
 <meta property="og:image" content="{e(og_image)}">
 <meta property="og:url" content="{e(og_url)}">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="{up}images/logo.png">
-<link rel="stylesheet" href="{up}style.css">
+<link rel="icon" href="{up}{v("images/logo.png")}">
+<link rel="stylesheet" href="{up}{v("style.css")}">
 </head>
 <body>
 {body}
@@ -50,7 +59,7 @@ def cover_body(cfg):
     issues = "\n".join(
         f"""<li class="issue">
   <a href="{n}/">
-    <img src="{e(c["image"])}" alt="" loading="lazy">
+    <img src="{e(v(c["image"]))}" alt="" loading="lazy">
     <span class="issue-number">No. {n}</span>
     <span class="issue-title">{e(c["title"])}</span>
     <span class="issue-caption">{e(c.get("caption", ""))}</span>
@@ -59,7 +68,7 @@ def cover_body(cfg):
         for n, c in enumerate(cfg["comics"], start=1)
     )
     return f"""<header class="cover">
-  <img class="cover-art" src="images/logo.png" alt="locus: {e(cfg["tagline"])}" width="420" height="420">
+  <img class="cover-art" src="{v("images/logo.png")}" alt="locus: {e(cfg["tagline"])}" width="420" height="420">
 </header>
 <main class="issues-wrap">
 <ol class="issues">
@@ -71,7 +80,7 @@ def cover_body(cfg):
 def comic_body(cfg, n, comic):
     comics = cfg["comics"]
     permalink = f'{cfg["base_url"]}{n}/'
-    image = f'../{comic["image"]}'
+    image = f'../{v(comic["image"])}'
     prompt = f'{cfg["repo_url"]}/blob/main/{comic["prompt"]}'
     title = e(comic["title"])
 
@@ -83,7 +92,7 @@ def comic_body(cfg, n, comic):
         return f'<a class="pager-{rel}" rel="{rel}" href="../{m}/">{text}</a>'
 
     return f"""<header class="bar">
-  <a class="brand" href="../"><img src="../images/logo.png" alt="" width="40" height="40"><span>locus</span></a>
+  <a class="brand" href="../"><img src="../{v("images/logo.png")}" alt="" width="40" height="40"><span>locus</span></a>
 </header>
 <main class="comic">
   <p class="eyebrow">No. {n}

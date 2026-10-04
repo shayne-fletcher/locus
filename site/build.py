@@ -71,6 +71,12 @@ def cover_body(cfg):
     return f"""<header class="cover">
   <img class="cover-art" src="{v("images/logo.png")}" alt="locus: {e(cfg["tagline"])}" width="420" height="420">
 </header>
+<section class="intro">
+  <p class="intro-lead">Comics about how <a href="https://meta-pytorch.org/monarch/">Monarch</a> works on the inside: where Rust and Python meet, which thread runs what, and how a result finds its way back.</p>
+  <p>One mechanism per strip, checked against the source. Every strip links to the prompt it was drawn from.</p>
+  <p><a class="start" href="1/">Start with No. 1 →</a></p>
+  <p class="intro-note">A personal project, not an official Monarch or Meta publication.</p>
+</section>
 <main class="issues-wrap">
 <ol class="issues">
 {issues}

@@ -25,27 +25,25 @@ class Counter(Actor):
         return self.n
 ```
 
-`Counter` holds an integer `n`. The endpoint `incr(k)` adds `k` to `n` and replies with the result.
+`Counter` holds `n`; `incr(k)` adds `k` and returns the new `n`.
 
-In general, let $S$ be the set of states an actor can be in, $M$ the set of messages it accepts, and $R$ the set of replies it can send. Handling one message is a function, which we call **step**: it takes the current state and a message, and returns the next state and a reply.
+Let $S$ be an actor's states, $M$ its messages and $R$ its replies. Handling one message is a function, **step**:
 
 $$ \mathsf{step} : S \times M \to S \times R $$
 
 ![$\mathsf{step}$ as a string diagram. Wires are sets, wires side by side form a product, and the box is a function.](images/fig-1-1-step.png)
 
-For `Counter`, a state is the integer $n$, a message is $\mathtt{incr}(k)$ for an integer $k$, and a reply is an integer:
+For `Counter`:
 
 $$ \mathsf{step}(n, \mathtt{incr}(k)) = (n + k,\ n + k) $$
 
-A function of this shape, where the next state and the output both depend on the current state and the input, defines a **Mealy machine**: the standard model of a state machine that produces output ([Mealy, 1955](#ref-mealy)).
+This is a **Mealy machine** ([Mealy, 1955](#ref-mealy)): next state and output both depend on state and input.
 
-Here a reply is what the endpoint returns, which Monarch sends back on the message's response port. In general an endpoint can send any number of messages to any ports (`explicit_response_port=True` hands it the response port to use itself), so the output of a step is a set of sends; `return x` is the case of exactly one. This is the **actor model** ([Hewitt, 1973](#ref-hewitt); [Agha, 1986](#ref-agha)): on each message, an actor sends messages, creates actors, and becomes its next state.
+Here $R$ is the return value, sent back on the message's response port. In general a step may send any number of messages (`explicit_response_port=True` hands the endpoint its port); `return x` is one send. Send messages, create actors, become the next state: the **actor model** ([Hewitt, 1973](#ref-hewitt); [Agha, 1986](#ref-agha)).
 
-Each actor gets [its own Python thread](https://github.com/meta-pytorch/monarch/blob/d16adfd48f71dadbdcf2c92c7a3d0054bd323ce2/monarch_hyperactor/src/actor.rs#L1729). Your `Counter` instance is [constructed there](https://github.com/meta-pytorch/monarch/blob/d16adfd48f71dadbdcf2c92c7a3d0054bd323ce2/python/monarch/_src/actor/actor_mesh.py#L1534), as the handling of the actor's first message, `__init__`, and never leaves. Rust's [`PythonActor`](https://github.com/meta-pytorch/monarch/blob/d16adfd48f71dadbdcf2c92c7a3d0054bd323ce2/monarch_hyperactor/src/actor.rs#L1066) holds a handle to the `_Actor` wrapper around it. The rest is plumbing around `step`, which never changes.
+Each actor has [its own Python thread](https://github.com/meta-pytorch/monarch/blob/d16adfd48f71dadbdcf2c92c7a3d0054bd323ce2/monarch_hyperactor/src/actor.rs#L1729). `Counter` is [constructed there](https://github.com/meta-pytorch/monarch/blob/d16adfd48f71dadbdcf2c92c7a3d0054bd323ce2/python/monarch/_src/actor/actor_mesh.py#L1534) by the first message, `__init__`, and never leaves; Rust's [`PythonActor`](https://github.com/meta-pytorch/monarch/blob/d16adfd48f71dadbdcf2c92c7a3d0054bd323ce2/monarch_hyperactor/src/actor.rs#L1066) holds a handle to it. Everything else is plumbing around `step`.
 
 ## A run is a fold
-
-Give `Counter` a second endpoint, which sets `n` back to zero:
 
 ```python
     @endpoint
@@ -54,7 +52,7 @@ Give `Counter` a second endpoint, which sets `n` back to zero:
         return 0
 ```
 
-An actor handles a sequence of messages $m_1, m_2, m_3, \ldots$ one at a time. Write $s_0$ for the state `__init__` leaves. Each step's next state is the following step's current state:
+Messages $m_1, m_2, \ldots$ arrive one at a time. From the initial state $s_0$:
 
 $$
 \begin{aligned}
@@ -66,21 +64,19 @@ $$
 
 ![Three steps composed along the state wire, from $s_0$ to $s_3$.](images/fig-2-1-fold.png)
 
-Threading a state through a sequence like this is a **fold**. The replies $r_1, r_2, \ldots$ go out; the state stays inside.
-
-Monarch's [`_dispatch_loop`](https://github.com/meta-pytorch/monarch/blob/d16adfd48f71dadbdcf2c92c7a3d0054bd323ce2/python/monarch/_src/actor/actor_mesh.py#L1398) is this loop, with batching removed. The state is never passed along because it lives in `self`:
+A **fold**: the state threads through, the replies go out.
 
 ```python
-while True:
-    msg = await receiver.recv()
-    await _handle_queued_message(actor, msg)
+for m in mailbox:
+    s, r = step(s, m)
+    reply(r)
 ```
 
 > State is the fold of the messages handled so far.
 
-**One at a time.** $s_2$ can't be computed until $s_1$ exists, so each handler finishes before the next message is taken.
+**One at a time.** $s_2$ needs $s_1$.
 
-**In order.** The same two messages, applied in either order to a state of 5:
+**In order.** From 5:
 
 $$
 \begin{aligned}
@@ -91,7 +87,7 @@ $$
 
 ![The same two messages in either order, ending in different states.](images/fig-2-2-order.png)
 
-The final states differ, so delivery must preserve order.
+Delivery must preserve order.
 
 ## References
 

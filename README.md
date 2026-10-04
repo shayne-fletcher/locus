@@ -20,6 +20,7 @@ Each comic lives beside the prompt used to make it. The site is built by `site/b
 - [Who owns the thread?](images/fig-2-who-owns-the-thread.png) — [prompt](figures/fig-2-who-owns-the-thread.md)
 - [How `handle.get()` wakes up](images/fig-3-1-handle-get.png) — [prompt](figures/fig-3-1-handle-get.md)
 - [How `await handle` wakes the asyncio loop](images/fig-3-2-handle-asyncio.png) — [prompt](figures/fig-3-2-handle-asyncio.md)
+- [A body future: Python in, Python out](images/fig-4-body-futures.png) — [prompt](figures/fig-4-body-futures.md)
 
 ## License
 

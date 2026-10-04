@@ -27,6 +27,12 @@
       "image": "images/fig-3-2-handle-asyncio.png",
       "prompt": "figures/fig-3-2-handle-asyncio.md",
       "caption": "The byte wakes the loop; the token says which await completed. The Tokio observer never runs the Python coroutine."
+    },
+    {
+      "title": "A body future: Python in, Python out",
+      "image": "images/fig-4-body-futures.png",
+      "prompt": "figures/fig-4-body-futures.md",
+      "caption": "Both ends are Python. Rust holds one reference and reports that it is ready: the same reporting mechanism a native task uses."
     }
   ]
 }

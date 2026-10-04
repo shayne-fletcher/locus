@@ -39,6 +39,8 @@ $$ \mathsf{step}(n, \mathtt{incr}(k)) = (n + k,\ n + k) $$
 
 A function of this shape, where the next state and the output both depend on the current state and the input, defines a **Mealy machine**: the standard model of a state machine that produces output (Mealy, 1955).
 
+Here a reply is what the endpoint returns, which Monarch sends back on the message's response port. In general an endpoint can send any number of messages to any ports (`explicit_response_port=True` hands it the response port to use itself), so the output of a step is a set of sends; `return x` is the case of exactly one. This is the **actor model** (Hewitt, 1973; Agha, 1986): on each message, an actor sends messages, creates actors, and becomes its next state.
+
 The object lives on its own Python thread; [`PythonActor`](https://github.com/meta-pytorch/monarch/blob/d16adfd48f71dadbdcf2c92c7a3d0054bd323ce2/monarch_hyperactor/src/actor.rs#L1066) holds a handle. The rest is plumbing around `step`, which never changes.
 
 ## A run is a fold
@@ -90,6 +92,12 @@ $$
 ![The same two messages in either order, ending in different states.](images/fig-2-2-order.png)
 
 The final states differ, so delivery must preserve order.
+
+## References
+
+- G. Agha. *Actors: A Model of Concurrent Computation in Distributed Systems.* MIT Press, 1986.
+- C. Hewitt, P. Bishop and R. Steiger. A universal modular ACTOR formalism for artificial intelligence. *IJCAI*, 1973.
+- G. H. Mealy. A method for synthesizing sequential circuits. *Bell System Technical Journal* 34(5), 1955.
 
 <!-- To come, in order:
 ## Order            two FIFO hops; order-preserving maps compose

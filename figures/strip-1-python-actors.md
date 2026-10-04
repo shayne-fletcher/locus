@@ -38,7 +38,7 @@ Rust unpickles `_Actor` (Monarch's wrapper, not your class) and constructs it. I
 ```
 [Tokio task]  mailbox loop ──PendingMessage──▶ [Python thread] asyncio loop
   one msg at a time,                              _dispatch_loop: one
-  never touches the GIL                           endpoint at a time
+  no GIL to deliver                               endpoint at a time
 ```
 Both are first-in, first-out, so per-actor order holds end to end. All the Python threads in a process share one GIL.
 
@@ -60,6 +60,6 @@ The Python thread is asleep in the selector (kqueue/epoll), GIL released. The pi
 **Panel 8: repeat**
 Back to `try_recv`. Anything that queued up during the handler is drained without sleeping again.
 
-**The one-liner:** Rust owns the mailbox and never takes the GIL. Python owns the event loop and makes every Python object on its own thread. A queue plus a pipe byte joins them. In algebra terms, `_dispatch_loop` is a fold over messages: your actor object is the state, and the replies are the outputs.
+**The one-liner:** Rust owns the mailbox and never takes the GIL to deliver a message. Python owns the event loop and makes every Python object on its own thread. A queue plus a pipe byte joins them. In algebra terms, `_dispatch_loop` is a fold over messages: your actor object is the state, and the replies are the outputs.
 
-**The exception:** supervision (`MeshFailure`) skips the queue: Rust schedules `__supervise__` directly on the same loop.
+**The exception:** supervision (`MeshFailure`) skips the queue: Rust takes the GIL, builds the `__supervise__` coroutine, and schedules it directly on the same loop.

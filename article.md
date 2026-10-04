@@ -1,6 +1,6 @@
 ---
 title: How Monarch's Python actors work
-subtitle: In pictures and a little mathematics
+subtitle: "[subtitle TBD]"
 author: Shane Fletcher
 ---
 

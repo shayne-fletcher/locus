@@ -1,6 +1,6 @@
 # Fig 2.2: order matters
 
-File: `src/images/fig-2-2-order.png`. Article: "A run is a fold".
+File: `images/fig-2-2-order.png`. Section: "A run is a fold".
 
 **Idea:** the same two messages in the opposite order give a different state.
 

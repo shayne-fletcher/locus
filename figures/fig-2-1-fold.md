@@ -1,6 +1,6 @@
 # Fig 2.1: the fold
 
-File: `src/images/fig-2-1-fold.png`. Article: "A run is a fold". This is the series' signature picture; it returns in the afterword.
+File: `images/fig-2-1-fold.png`. Section: "A run is a fold". The signature picture; it returns in the afterword.
 
 **Idea:** a run is the step box from Fig 1.1 repeated, with the state threaded through.
 

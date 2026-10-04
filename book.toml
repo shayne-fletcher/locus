@@ -1,9 +1,0 @@
-[book]
-title = "Who owns the thread?"
-description = "How Monarch's Python actors work, in pictures and a little mathematics."
-authors = ["Shane Fletcher"]
-language = "en"
-src = "src"
-
-[output.html]
-mathjax-support = true

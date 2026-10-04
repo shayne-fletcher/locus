@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>$title$</title>
+<meta name="description" content="$subtitle$">
+<style>
+$highlighting-css$
+</style>
+<link rel="stylesheet" href="site.css">
+$if(math)$
+$math$
+$endif$
+</head>
+<body>
+<main>
+<header>
+<h1 class="title">$title$</h1>
+$if(subtitle)$
+<p class="subtitle">$subtitle$</p>
+$endif$
+<p class="byline">$author$</p>
+</header>
+$body$
+</main>
+</body>
+</html>

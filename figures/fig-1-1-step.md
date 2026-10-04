@@ -1,6 +1,6 @@
 # Fig 1.1: the step box
 
-File: `src/images/fig-1-1-step.png`. Article: "An actor is a step".
+File: `images/fig-1-1-step.png`. Section: "An actor is a step".
 
 **Idea:** the whole actor is a single box with two inputs and two outputs.
 

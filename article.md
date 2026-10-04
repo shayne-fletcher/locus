@@ -4,7 +4,7 @@ subtitle: In pictures and a little mathematics
 author: Shane Fletcher
 ---
 
-A Python actor in [Monarch](https://github.com/meta-pytorch/monarch) is two programs holding hands. Rust owns the mailbox. Python owns the loop. Here is the whole story on one page:
+A Python actor in [Monarch](https://github.com/meta-pytorch/monarch) lives in two languages at once. Rust owns the mailbox. Python owns the loop. Here is the whole story on one page:
 
 ![Rust owns the mailbox, Python owns the loop.](images/strip-1-python-actors.png)
 

@@ -24,5 +24,14 @@ $endif$
 </header>
 $body$
 </main>
+<script>
+for (const img of document.querySelectorAll("figure img")) {
+  const a = document.createElement("a");
+  a.href = img.getAttribute("src");
+  a.title = "Open full size";
+  img.replaceWith(a);
+  a.appendChild(img);
+}
+</script>
 </body>
 </html>

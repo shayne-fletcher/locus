@@ -55,7 +55,7 @@ h3 { font-size: 1.15rem; color: var(--heading); margin-top: 2.2rem; }
 
 a { color: var(--link); text-decoration-thickness: 1px; text-underline-offset: 2px; }
 
-figure { max-width: var(--wide); margin: 2.5rem auto; text-align: center; }
+figure { max-width: var(--measure); margin: 2.5rem auto; text-align: center; }
 figure img { width: 100%; height: auto; border-radius: 10px; }
 figcaption { font-size: 0.95rem; font-style: italic; color: var(--muted); margin-top: 0.6rem; }
 
@@ -86,3 +86,4 @@ summary { cursor: pointer; color: var(--muted); font-style: italic; }
   main { padding-top: 2.5rem; }
   .title { font-size: 2rem; }
 }
+figure a { display: block; cursor: zoom-in; }

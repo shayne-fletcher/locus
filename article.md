@@ -8,7 +8,7 @@ A Python actor in [Monarch](https://github.com/meta-pytorch/monarch) spans two l
 
 ![Rust owns the mailbox, Python owns the loop.](images/strip-1-python-actors.png)
 
-Each section below takes one idea from the strip and states it exactly. Source links are pinned to [`d16adfd48`](https://github.com/meta-pytorch/monarch/tree/d16adfd48f71dadbdcf2c92c7a3d0054bd323ce2). *Personal notes, not an official Monarch or Meta publication.*
+Source: [`d16adfd48`](https://github.com/meta-pytorch/monarch/tree/d16adfd48f71dadbdcf2c92c7a3d0054bd323ce2). *Personal notes.*
 
 ## An actor is a step
 
@@ -25,23 +25,17 @@ class Counter(Actor):
         return self.n
 ```
 
-Let $S$ be the actor's states, $M$ its messages, $R$ its replies. The actor is one function:
+States $S$, messages $M$, replies $R$:
 
 $$ \mathsf{step} : S \times M \to S \times R $$
 
 ![The step box.](images/fig-1-1-step.png)
 
-For `Counter`, $S = R = \mathbb{Z}$ and $\mathsf{step}(n, \mathtt{incr}(k)) = (n + k,\ n + k)$. An exception raised by an endpoint is in $R$: it is pickled and fails the caller's future.
+$\mathsf{step}(n, \mathtt{incr}(k)) = (n + k,\ n + k)$. A **Mealy machine**.
 
-A state machine whose output depends on state and input is a **Mealy machine**. Curried, $S \to (M \to S \times R)$: each state is a menu of responses, a **coalgebra**.
-
-The object is constructed once, on its own Python thread, and never moves; Rust's [`PythonActor`](https://github.com/meta-pytorch/monarch/blob/d16adfd48f71dadbdcf2c92c7a3d0054bd323ce2/monarch_hyperactor/src/actor.rs#L1066) holds a handle to it. Everything else is plumbing around `step`: delivering $m$, returning $r$, choosing the thread that calls it. `step` itself never changes, which is why sync and async actors turn out to be the same actor.
-
-Real endpoints have effects (other actors, tensors, GPUs), so `step` is really a computation yielding $S \times R$. The shape is unchanged.
+The object lives on its own Python thread; [`PythonActor`](https://github.com/meta-pytorch/monarch/blob/d16adfd48f71dadbdcf2c92c7a3d0054bd323ce2/monarch_hyperactor/src/actor.rs#L1066) holds a handle. The rest is plumbing around `step`, which never changes.
 
 ## A run is a fold
-
-Add a second endpoint:
 
 ```python
     @endpoint
@@ -50,7 +44,7 @@ Add a second endpoint:
         return 0
 ```
 
-From the state $s_0$ left by `__init__`, each step feeds the next:
+From $s_0$:
 
 $$
 \begin{aligned}
@@ -62,16 +56,7 @@ $$
 
 ![The fold.](images/fig-2-1-fold.png)
 
-A fold that emits at each step is `mapAccumL`: replies out, state private.
-
-```python
-def run(step, s, msgs):
-    for m in msgs:
-        s, r = step(s, m)
-        yield r
-```
-
-Monarch's [`_dispatch_loop`](https://github.com/meta-pytorch/monarch/blob/d16adfd48f71dadbdcf2c92c7a3d0054bd323ce2/python/monarch/_src/actor/actor_mesh.py#L1398), batching removed, is the same loop. The state lives in `self`; the actor object is the accumulator.
+`mapAccumL`. Replies out; state in `self`. [`_dispatch_loop`](https://github.com/meta-pytorch/monarch/blob/d16adfd48f71dadbdcf2c92c7a3d0054bd323ce2/python/monarch/_src/actor/actor_mesh.py#L1398):
 
 ```python
 while True:
@@ -79,15 +64,11 @@ while True:
     await _handle_queued_message(actor, msg)
 ```
 
-The stream never ends, but every prefix has a fold:
+> State is the fold of the messages handled so far.
 
-> The actor's state is the fold of the messages handled so far.
+**One at a time:** $s_2$ needs $s_1$.
 
-This demands two things.
-
-**One at a time.** $s_2$ depends on $s_1$, so each handler completes before the next `recv`.
-
-**Order.** From $s_0 = 5$:
+**In order:**
 
 $$
 \begin{aligned}
@@ -98,7 +79,7 @@ $$
 
 ![Order matters.](images/fig-2-2-order.png)
 
-Order is part of a message's meaning, so delivery must preserve it.
+Delivery must preserve order.
 
 <!-- To come, in order:
 ## Order            two FIFO hops; order-preserving maps compose

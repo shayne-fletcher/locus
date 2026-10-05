@@ -33,6 +33,12 @@
       "image": "images/fig-4-body-futures.png",
       "prompt": "figures/fig-4-body-futures.md",
       "caption": "Both ends are Python. Rust holds one reference and reports that it is ready: the same reporting mechanism a native task uses."
+    },
+    {
+      "title": "How a sync actor works",
+      "image": "images/fig-5-how-a-sync-actor-works.png",
+      "prompt": "figures/fig-5-how-a-sync-actor-works.md",
+      "caption": "One Python thread owns the actor: callbacks run between messages, .get() borrows its cached private loop, and stop waits for Thread.join()."
     }
   ]
 }

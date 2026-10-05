@@ -21,6 +21,7 @@ Each comic lives beside the prompt used to make it. The site is built by `site/b
 - [How `handle.get()` wakes up](images/fig-3-1-handle-get.png) — [prompt](figures/fig-3-1-handle-get.md)
 - [How `await handle` wakes the asyncio loop](images/fig-3-2-handle-asyncio.png) — [prompt](figures/fig-3-2-handle-asyncio.md)
 - [A body future: Python in, Python out](images/fig-4-body-futures.png) — [prompt](figures/fig-4-body-futures.md)
+- [How a sync actor works](images/fig-5-how-a-sync-actor-works.png) — [prompt](figures/fig-5-how-a-sync-actor-works.md)
 
 ## License
 
